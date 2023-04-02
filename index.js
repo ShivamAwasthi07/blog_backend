@@ -82,6 +82,42 @@ app.delete("/blogs/:blogId", async (req, res) => {
   });
 });
 
+app.put("/blogs/:blogId", async (req, res) => {
+  const q =
+    "UPDATE blogs SET blogTitle=?, blogText=?, authorName=?, coverImage=?, postDate=?, blogDesc=? where blogId = ?";
+  const newData = [
+    req.body.blogTitle,
+    req.body.blogText,
+    req.body.authorName,
+    req.body.coverImage,
+    req.body.postDate,
+    req.body.blogDesc,
+    req.params.blogId,
+  ];
+  await db.query(q, newData, (err, data) => {
+    if (err) {
+      return res.json({
+        statusCode: 500,
+        statusMessage: "FAILED",
+        message: "Data could not be updated",
+        data: err,
+      });
+    }
+    if (data.affectedRows === 0) {
+      return res.json({
+        statusCode: 200,
+        statusMessage: "FAIL",
+        message: "Blog cannot be updated in the list",
+      });
+    }
+    return res.json({
+      statusCode: 200,
+      statusMessage: "SUCCESS",
+      message: "Blog Updated Successfully",
+    });
+  });
+});
+
 app.post("/blogs", async (req, res) => {
   const query =
     "INSERT INTO blogs (`blogTitle`, `blogText`, `authorName`, `postDate`, `blogDesc`, `coverImage`) VALUES (?)";
