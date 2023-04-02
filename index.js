@@ -1,40 +1,70 @@
-import express from "express";
-import mongoose from "mongoose";
-import { config } from "./config/default"; 
+const express = require("express");
+const mysql = require("mysql");
+const blogRoute = require("./routes/blogRoute");
+const BlogController = require("./controller/BlogController");
+const cors = require("cors");
 const app = express();
+app.use(cors());
+app.use(express.json());
 
-(async () => {
-    try {
-      const db = `mongodb+srv://${config.cloudDb.dbuname}:${config.
-        cloudDb.dbpwd
-      }@${config.cloudDb.cluster}/${config.cloudDb.dbname}?retryWrites=true&w=majority`;
-      await mongoose.connect(db, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      });
-      console.log("Connected to Database");
-      const port = config.port;
-      app.listen(port, () => {
-        console.log(`Server started on port ${port}`);
-        console.log(`App is on: ${config.env} Mode`);
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  })();
+const db = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "shivamsql",
+  database: "mydb",
+});
 
-  app.get("/", async (req, res) => {
-    try {
-        res.status(404).json({
-        statusCode: "SUCCESS",
-        statusValue: 200,
-        message: "Requested url is not available..",
-      });
-    } catch (err) {
-      res.status(500).json({
-        statusCode: "ERROR",
-        statusValue: 500,
-        messages: `The Server was unable to complete your request. ${err}`,
+app.get("/blogs", async (req, res) => {
+  const q = "SELECT * FROM blogs";
+  await db.query(q, (err, data) => {
+    if (err) {
+      return res.json({
+        statusCode: 500,
+        statusMessage: "FAILED",
+        message: "Data could not be fetched",
+        data: err,
       });
     }
+    return res.json({
+      statusCode: 200,
+      statusMessage: "SUCCESS",
+      data: data ? data : [],
+      message: "Blogs Fetched Successfully",
+    });
   });
+});
+
+app.post("/blogs", async (req, res) => {
+  const query =
+    "INSERT INTO blogs (`blogTitle`, `blogText`, `authorName`, `postDate`) VALUES (?)";
+  const values = [
+    req.body.blogTitle,
+    req.body.blogText,
+    req.body.authorName,
+    req.body.postDate,
+  ];
+  await db.query(query, [values], (err, data) => {
+    if (err) {
+      return res.json({
+        statusCode: 500,
+        statusMessage: "FAILED",
+        message: "The Blog could not be added",
+        data: err,
+      });
+    }
+    return res.json({
+      statusCode: 200,
+      statusMessage: "SUCCESS",
+      message: `Your Blog: ${req.body.blogTitle} has been Added Successfully!`,
+    });
+  });
+});
+
+// app.get()
+
+app.listen(8080, () => {
+  console.log("Connected to server!!!");
+  console.log("Listening to port 8080");
+});
+
+module.exports = db;

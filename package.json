@@ -1,26 +1,19 @@
 {
-  "name": "blog_backend",
+  "name": "backend",
   "version": "1.0.0",
-  "description": "this is the backend of the blogs app",
+  "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --experimental-modules --es-module-specifier-resolution=node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ShivamAwasthi07/blog_backend.git"
-  },
-  "author": "shivam awasthi",
+  "keywords": [],
+  "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/ShivamAwasthi07/blog_backend/issues"
-  },
-  "homepage": "https://github.com/ShivamAwasthi07/blog_backend#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.18.2",
-    "mongoose": "^7.0.2",
-    "nodemon": "^2.0.21"
-  },
-  "type": "module"
+    "mysql": "^2.18.1",
+    "nodemon": "^2.0.22"
+  }
 }
